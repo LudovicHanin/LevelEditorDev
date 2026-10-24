@@ -1,4 +1,4 @@
-namespace LevelEditor.Core.Commands
+namespace LevelEditor.Core
 {
     public sealed class PlaceCommand : IEditorCommand
     {
