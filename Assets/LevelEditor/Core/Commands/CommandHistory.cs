@@ -1,38 +1,43 @@
+using System;
 using System.Collections.Generic;
 
 namespace LevelEditor.Core
 {
     public sealed class CommandHistory
     {
-        public event System.Action OnChanged;
+        public event Action OnChanged;
 
-        private List<IEditorCommand> _history = new List<IEditorCommand>();
-        private int _position = 0;
-        private int _savedPosition = 0;
+        private List<IEditorCommand> _commands = new List<IEditorCommand>();
+        private int _position;
+        private int _savedPosition;
 
-        bool canUndo => _position > 0;
-        bool canRedo => _position < _history.Count;
-        bool isDirty => _position != _savedPosition;
+        public bool CanUndo => _position > 0;
+        public bool CanRedo => _position < _commands.Count;
+        public bool IsDirty => _position != _savedPosition;
 
-        public int Count => _history.Count;
+        public int Count => _commands.Count;
         public int Position => _position;
-        public string UndoLabel => canUndo ? _history[_position - 1].Label : null;
-        public string RedoLabel => canRedo ? _history[_position].Label : null;
+        public string UndoLabel => CanUndo ? _commands[_position - 1].Label : null;
+        public string RedoLabel => CanRedo ? _commands[_position].Label : null;
 
         public void Push(IEditorCommand command, LevelData level)
         {
             if (command == null) 
                 throw new System.ArgumentNullException(nameof(command));
+            RequireLevel(level);
 
             command.Do(level);
             
-            if(_position < _history.Count)
-                _history.RemoveRange(_position, _history.Count - _position);
+            if(_position < _commands.Count)
+            { 
+                if(_savedPosition > _position)
+                    _savedPosition = -1;
+                
+                _commands.RemoveRange(_position, _commands.Count - _position); 
+            }
 
-            if(_savedPosition > _position)
-                _savedPosition = -1;
 
-            _history.Add(command);
+            _commands.Add(command);
             _position++;
 
             OnChanged?.Invoke();
@@ -40,18 +45,20 @@ namespace LevelEditor.Core
 
         public void Undo(LevelData level)
         {
-            if (!canUndo) 
+            RequireLevel(level);
+            if (!CanUndo) 
                 return;
-            _history[_position-1].Undo(level);
+            _commands[_position-1].Undo(level);
             _position--;
             OnChanged?.Invoke();
         }
 
         public void Redo(LevelData level)
         {
-            if (!canRedo) 
+            RequireLevel(level);
+            if (!CanRedo) 
                 return;
-            _history[_position].Do(level);
+            _commands[_position].Do(level);
             _position++;
             OnChanged?.Invoke();
         }
@@ -64,7 +71,7 @@ namespace LevelEditor.Core
 
         public void Clear()
         {
-            _history.Clear();
+            _commands.Clear();
             _position = 0;
             _savedPosition = 0;
             OnChanged?.Invoke();
@@ -72,10 +79,15 @@ namespace LevelEditor.Core
 
         public string GetLabel(int index)
         {
-            if (index < 0 || index >= _history.Count)
+            if (index < 0 || index >= _commands.Count)
                 throw new System.ArgumentOutOfRangeException(nameof(index));
 
-            return _history[index].Label;
+            return _commands[index].Label;
+        }
+
+        static void RequireLevel(LevelData level)
+        {
+            if (level == null) throw new ArgumentNullException(nameof(level));
         }
     }
 }

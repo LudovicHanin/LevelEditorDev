@@ -12,7 +12,7 @@ namespace LevelEditor.Core
             _snapshot = obj.Clone();
         }
 
-        public void Do(LevelData level) => level.Add(_snapshot);
+        public void Do(LevelData level) => level.Add(_snapshot.Clone());
 
         public void Undo(LevelData level) => level.Remove(_snapshot.InstanceId);
     }

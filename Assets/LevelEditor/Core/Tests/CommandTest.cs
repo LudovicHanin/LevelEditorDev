@@ -1,7 +1,6 @@
 ﻿using LevelEditor.Core;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 
 public class CommandTests
 {

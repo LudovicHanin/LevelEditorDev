@@ -15,6 +15,6 @@ namespace LevelEditor.Core
 
         public void Do(LevelData level) => level.Remove(_snapshot.InstanceId);
 
-        public void Undo(LevelData level) => level.Add(_snapshot);
+        public void Undo(LevelData level) => level.Add(_snapshot.Clone());
     }
 }
