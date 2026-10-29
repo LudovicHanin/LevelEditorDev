@@ -1,0 +1,16 @@
+{
+    "name": "LevelEditor.Runtime",
+    "rootNamespace": "LevelEditor.Runtime",
+    "references": [
+        "GUID:e9140e732309110479dcffe09e6b36c5"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
